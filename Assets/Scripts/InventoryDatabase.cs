@@ -57,6 +57,7 @@ public class InventoryDatabase : MonoBehaviour
             _blocksInventory.Remove(blockType);
             _blocksInventory.Add(blockType, value);
         }
+        EventsManager.Singleton.SelectBlock(blockType);
         EmitDatabaseEvent();
     }
 

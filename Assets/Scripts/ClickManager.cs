@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 
 public class ClickManager : MonoBehaviour
 {
@@ -9,7 +10,6 @@ public class ClickManager : MonoBehaviour
     [SerializeField]
     private Tilemap _editModeTilemap, _walkableTilemap;
 
-
     private void Start()
     {
         ClearWalkablePath();
@@ -17,6 +17,12 @@ public class ClickManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.R))
+        {
+            Scene scene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(scene.name);
+        }
+
         if (ClickedWithLeftSide())
         {
             RaycastHit2D hit = GetClickHit();
@@ -26,7 +32,7 @@ public class ClickManager : MonoBehaviour
                 var tilemap = GetClickedTilemap(hit.transform);
                 if (tilemap)
                 {
-                    var tilePosition = GetTilePosition(tilemap);
+                    var tilePosition = GetTilePositionByClick(tilemap);
                     var tileWorldPosition = tilemap.GetCellCenterWorld(tilePosition);
                     EventsManager.Singleton.TryAddSelectedBlock(tileWorldPosition);
                 }
@@ -44,6 +50,8 @@ public class ClickManager : MonoBehaviour
                 }
                 if (hit.transform.TryGetComponent(out IsBlock block))
                 {
+                    var tilePosition = GetTilePositionByClick(_editModeTilemap);
+                    _editModeTilemap.SetTile(tilePosition, _editModeTile);
                     EventsManager.Singleton.DeleteAItem(block.GetBlockType());
                     Destroy(block.gameObject);
                     return;
@@ -51,7 +59,7 @@ public class ClickManager : MonoBehaviour
                 var tilemap = GetClickedTilemap(hit.transform);
                 if (tilemap)
                 {
-                    var tilePosition = GetTilePosition(tilemap);
+                    var tilePosition = GetTilePositionByClick(tilemap);
                     tilemap.SetTile(tilePosition, null);
                     _editModeTilemap.SetTile(tilePosition, _editModeTile);
                     EventsManager.Singleton.DeleteAItem(BlockTypes.Ground);
@@ -86,7 +94,7 @@ public class ClickManager : MonoBehaviour
         return EventSystem.current.IsPointerOverGameObject();
     }
 
-    private Vector3Int GetTilePosition(Tilemap tilemap)
+    private Vector3Int GetTilePositionByClick(Tilemap tilemap)
     {
         var worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         return tilemap.WorldToCell(worldPoint);

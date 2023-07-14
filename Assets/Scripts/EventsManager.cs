@@ -16,7 +16,6 @@ public class EventsManager : MonoBehaviour
         {
             Singleton = this;
         }
-        DontDestroyOnLoad(this);
     }
 
     public event Action<BlockTypes> OnDeleteAItem;

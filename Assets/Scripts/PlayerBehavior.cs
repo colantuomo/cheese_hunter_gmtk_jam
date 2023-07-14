@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using System;
 
 public class PlayerBehavior : MonoBehaviour
 {
@@ -30,6 +32,9 @@ public class PlayerBehavior : MonoBehaviour
     private void OnUseJumpBlock()
     {
         _rb.AddForce(Vector2.up * _jumpForce);
+        //_rb.DOMoveY(transform.position.y + 4f, 1f);
+        //var jumpHeight = new Vector3(transform.position.x + 4f, transform.position.y, transform.position.z);
+        //_rb.DOJump(jumpHeight, 5f, 1, 1f);
     }
 
     private void OnResetBlockEffect()
@@ -40,7 +45,7 @@ public class PlayerBehavior : MonoBehaviour
     private void OnUseFastForwardBlock(float speed)
     {
         _direction = 1;
-        SetTempSpeed(_tempSpeed + speed);
+        _rb.DOMoveX(transform.position.x + 3f, 2f).SetEase(Ease.OutExpo);
     }
 
     private void FixedUpdate()
